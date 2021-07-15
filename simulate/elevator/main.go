@@ -52,6 +52,7 @@ func ccConnHandler(c net.Conn) {
 		_, err := io.ReadFull(c, head) //读取头部的2个字节
 		if err != nil {
 			log.Println(err)
+			return
 		}
 		cod := binary.BigEndian.Uint16(head)
 		elevator.ParseCodeElevator(cod, sess)

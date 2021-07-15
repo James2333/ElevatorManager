@@ -74,6 +74,13 @@ func ReqElevatorArriveEnd(s *session.Session){
 //错误返回
 func ReplyError(s *session.Session) {
 	//buffer := packet.Packet(errors.New("404 not found"), ERROR)
-	log.Printf("收到%s无效的请求",s.C.RemoteAddr().String())
+	b:=make([]byte,1024)
+	//回收垃圾包
+	_,err:=s.C.Read(b)
+	if err != nil {
+		log.Println("回收垃圾包出错")
+		return
+	}
+	log.Printf("收到%s无效的请求", s.C.RemoteAddr().String())
 	return
 }

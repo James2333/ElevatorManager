@@ -55,13 +55,14 @@ func cConnHandler(c net.Conn) {
 		Start:  3,
 		End:    5,
 	}
-	NewTestTask(sess, task1)
+	go NewTestTask(sess, task1)
 	for {
 		//此处应该先 解包识别byte[0:2]的code 然后去传入 不同的方法。
 		head := make([]byte, packet.HEADER_LEN)
 		_, err := io.ReadFull(c, head) //读取头部的2个字节
 		if err != nil {
 			log.Println(err)
+			return
 		}
 		cod := binary.BigEndian.Uint16(head)
 		schedule.ParseCodeScheduling(cod, sess)
@@ -71,4 +72,5 @@ func cConnHandler(c net.Conn) {
 func NewTestTask(s *session.Session, task *task.Task) {
 	b := packet.Packet(task, code.CHOOSE_ELE)
 	s.Ch <- b
+	return
 }

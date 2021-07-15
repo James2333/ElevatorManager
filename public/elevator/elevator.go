@@ -3,6 +3,7 @@ package elevator
 import (
 	"errors"
 	"log"
+	"math"
 	"sync"
 )
 
@@ -80,7 +81,7 @@ func (els Elevators) RightElevator(start int64) (string, error) {
 	} else {
 		min := int64(99)
 		for k, v := range freeEl {
-			if Abs(v-start) < min {
+			if int64(math.Abs(float64(v-start))) < min {
 				elId = k
 				min = Abs(v - start)
 			}
@@ -92,6 +93,20 @@ func (els Elevators) RightElevator(start int64) (string, error) {
 	els[elId].CurrentState = "1"
 	return elId, nil
 }
+
+func Delete(elId string)  {
+	if elId=="pss"{
+		log.Println("调度断开连接!")
+		return
+	}
+	if _,ok:=Els[elId];!ok{
+		log.Printf("此电梯%s信息不存在",elId)
+		return
+	}
+	log.Printf("删除电梯%s信息成功",elId)
+	delete(Els,elId)
+}
+
 func Abs(n int64) int64 {
 	//els["zbc"]=nil
 	if n < 0 {

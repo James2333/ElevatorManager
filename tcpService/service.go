@@ -21,9 +21,9 @@ func NewTcpService() {
 		fmt.Println("listen failed, err:", err)
 		return
 	}
-	fmt.Println("listen Start...:")
+	log.Println("listen Start...:")
 	//els := NewTestEls()
-	fmt.Println("初始化电梯数据...")
+	log.Println("初始化电梯数据...")
 	go func() {
 		for  {
 			//log.Println("打印电梯信息:")
@@ -35,10 +35,10 @@ func NewTcpService() {
 	}()
 	for {
 		//2.接收客户端的链接
-		conn, err := listen.Accept()
-		if err != nil {
-			fmt.Printf("accept failed, err:%v\n", err)
-			continue
+			conn, err := listen.Accept()
+			if err != nil {
+				fmt.Printf("accept failed, err:%v\n", err)
+				continue
 		}
 		//3.开启一个Goroutine，处理链接
 		go connSt(conn)
@@ -50,6 +50,8 @@ func connSt(c net.Conn)  {
 	sess := session.NewSession(c,in)
 	defer func() {
 		glog.Info("disconnect:" + c.RemoteAddr().String())
+		session.Delete(sess.SsiD)
+		elevator.Delete(sess.SsiD)
 		c.Close()
 	}()
 	go func() {
@@ -66,6 +68,7 @@ func connSt(c net.Conn)  {
 		_, err := io.ReadFull(c, head) //读取头部的2个字节
 		if err != nil {
 			log.Println(err)
+			return
 		}
 		code := binary.BigEndian.Uint16(head)
 		eleManager.ParseCode(code,sess)
